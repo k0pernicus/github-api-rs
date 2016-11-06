@@ -38,11 +38,11 @@ impl<'a> UserClient<'a> {
     ///
     /// # Example
     ///
-    /// ```
+    /// `
     /// let github_client = GithubClient::new("k0pernicus", "myapikey0123456789");
     /// let user_client = github_client.get_myself_client();
     /// let user_infos = user_client.unwrap();
-    /// ```
+    /// `
     pub fn get(&self) -> Result<UserInfoStructure, String> {
         match self.github_client
             .process_request(Method::Get, &format!("{}/{}", USER_API, self.username)) {
