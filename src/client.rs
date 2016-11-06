@@ -1,7 +1,7 @@
 use hyper::Client;
 use hyper::client::response::Response;
 use hyper::Error;
-use hyper::header::{Authorization, Basic, UserAgent};
+use hyper::header::UserAgent;
 use hyper::method::Method;
 use hyper::status::StatusCode;
 
@@ -116,6 +116,7 @@ impl GithubClient {
         let url = format!("{}/{}", GITHUB_API_URL, url);
         self.client
             .request(method, &url)
+            // TODO: Add Authorization
             .header(UserAgent(USER_AGENT.to_owned()))
             .send()
     }
