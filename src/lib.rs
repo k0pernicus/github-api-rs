@@ -1,12 +1,17 @@
 #![feature(custom_derive, plugin)]
 #![plugin(serde_macros)]
 
+#[macro_use]
 extern crate hyper;
 extern crate serde;
 extern crate serde_json;
 
 pub mod client;
 pub mod user;
+
+// Custom headers
+header! { (XRateLimitLimit, "X-RateLimit-Limit") => [usize] }
+header! { (XRateLimitRemaining, "X-RateLimit-Remaining") => [usize] }
 
 #[cfg(test)]
 mod tests {
