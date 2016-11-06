@@ -73,8 +73,13 @@ impl GithubClient {
     /// # Example
     ///
     /// `let user_client = GithubClient::get_user("k0pernicus")`
-    fn get_user_client<'a>(&'a self, username: &'a str) -> UserClient {
+    pub fn get_user_client<'a>(&'a self, username: &'a str) -> UserClient {
         UserClient::new(&self, username)
+    }
+
+    /// Returns a User client that corresponding to the current user
+    pub fn get_myself_client<'a>(&'a self) -> UserClient {
+        UserClient::new(&self, &self.username)
     }
 
     /// Process a request, using an HTTP/HTTPS request method and a URL.
