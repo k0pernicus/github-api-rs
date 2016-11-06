@@ -34,7 +34,15 @@ impl<'a> UserClient<'a> {
         }
     }
 
-    /// Returns a String that represents the body of the request for a user, or an error
+    /// Returns a Result type that contains a UserInfoStructure structure, or a String error.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let github_client = GithubClient::new("k0pernicus", "myapikey0123456789");
+    /// let user_client = github_client.get_myself_client();
+    /// let user_infos = user_client.unwrap();
+    /// ```
     pub fn get(&self) -> Result<UserInfoStructure, String> {
         match self.github_client
             .process_request(Method::Get, &format!("{}/{}", USER_API, self.username)) {
