@@ -21,11 +21,12 @@ mod tests {
     use user::UserUpdateStructure;
 
     const DEFAULT_API_KEY: &'static str = "HelloWorld12345";
+    const DEFAULT_GITHUB_PROFILE: &'static str = "username";
 
     #[test]
     fn test_client() {
-        let github_client = GithubClient::new("k0pernicus", DEFAULT_API_KEY);
-        assert!(github_client.username == "k0pernicus".to_string());
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, DEFAULT_API_KEY);
+        assert!(github_client.username == DEFAULT_GITHUB_PROFILE.to_string());
         assert!(github_client.api_key == DEFAULT_API_KEY.to_string());
     }
 
@@ -36,7 +37,7 @@ mod tests {
             Ok(val) => val,
             Err(e) => DEFAULT_API_KEY.to_string(),
         };
-        let github_client = GithubClient::new("k0pernicus", &GITHUB_API_KEY);
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
         let myself = github_client.get_myself_client();
         match myself.get() {
             Ok(value) => println!("SUCCESS: {:?}", value),
@@ -44,32 +45,32 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn modify_user() {
-    //     let key = "GITHUB_API_RS";
-    //     let GITHUB_API_KEY = match env::var(key) {
-    //         Ok(val) => val,
-    //         Err(e) => DEFAULT_API_KEY.to_string(),
-    //     };
-    //     let github_client = GithubClient::new("k0pernicus", &GITHUB_API_KEY);
-    //     let myself_client = github_client.get_myself_client();
-    //     match myself_client.get() {
-    //         Ok(value) => println!("GET SUCCESS: {:?}", value),
-    //         Err(error) => println!("GET ERROR: {:?}", error),
-    //     }
-    //     let new_infos = UserUpdateStructure {
-    //         name: None,
-    //         email: None,
-    //         blog: None,
-    //         company: Some(String::from("DernierCri")),
-    //         location: Some(String::from("Lille, France")),
-    //         hireable: Some(false),
-    //         bio: None,
-    //     };
-    //     match myself_client.update(&new_infos) {
-    //         Ok(value) => println!("UPDATE SUCCESS: {:?}", value),
-    //         Err(error) => println!("UPDATE ERROR: {:?}", error),
-    //     }
-    // }
+    #[test]
+    fn modify_user() {
+        let key = "GITHUB_API_RS";
+        let GITHUB_API_KEY = match env::var(key) {
+            Ok(val) => val,
+            Err(e) => DEFAULT_API_KEY.to_string(),
+        };
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
+        let myself_client = github_client.get_myself_client();
+        match myself_client.get() {
+            Ok(value) => println!("GET SUCCESS: {:?}", value),
+            Err(error) => println!("GET ERROR: {:?}", error),
+        }
+        let new_infos = UserUpdateStructure {
+            name: None,
+            email: None,
+            blog: None,
+            company: Some(String::from("DernierCri")),
+            location: Some(String::from("Lille, France")),
+            hireable: Some(false),
+            bio: None,
+        };
+        match myself_client.update(&new_infos) {
+            Ok(value) => println!("UPDATE SUCCESS: {:?}", value),
+            Err(error) => println!("UPDATE ERROR: {:?}", error),
+        }
+    }
 
 }
