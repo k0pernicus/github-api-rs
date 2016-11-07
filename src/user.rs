@@ -9,9 +9,9 @@ use hyper::method::Method;
 use serde_json;
 
 /// URL to access the Github API for myself
-const USER_API: &'static str = "user";
+const USER_API_URL: &'static str = "user";
 /// URL to access the Github API for other Github users
-const USERS_API: &'static str = "users";
+const USERS_API_URL: &'static str = "users";
 
 /// A client to communicate with the Github API for Users.
 /// You can create as much as UserClient structure as users you're looking for.
@@ -52,12 +52,12 @@ impl<'a> UserClient<'a> {
     pub fn get(&self) -> Result<UserInfoStructure, String> {
         /// Check if the current user is the same for this client
         let url = if self.username == self.github_client.username {
-            USER_API.to_string()
+            USER_API_URL.to_string()
         } else {
-            format!("{}/{}", USERS_API, self.username)
+            format!("{}/{}", USERS_API_URL, self.username)
         };
         match self.github_client
-            .process_request(Method::Get, &url) {
+            .process_request(Method::Get, &url, None) {
             Ok(response) => {
                 match serde_json::from_str(&response) {
                     Ok(user_structure) => Ok(user_structure),
@@ -70,6 +70,23 @@ impl<'a> UserClient<'a> {
                 }
             }
             Err(error) => Err(error),
+        }
+    }
+
+    /// Update the current informations about the user, and returns a String that contains
+    /// a message from the server if the request succeeds or an error message
+    ///
+    /// # Argument
+    ///
+    /// `new_infos` - A UserUpdateStructure that contains some informations to update
+    pub fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
+        let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
+        match infos_to_send {
+            Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
+            Err(error) => {
+                Err(format!("Error converting the updated structure to string, due to {}",
+                            error))
+            }
         }
     }
 }
@@ -155,17 +172,17 @@ struct UserPlanStructure {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserUpdateStructure {
     #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
+    pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    email: Option<String>,
+    pub email: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    blog: Option<String>,
+    pub blog: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    company: Option<String>,
+    pub company: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    location: Option<String>,
+    pub location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    hireable: Option<bool>,
+    pub hireable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    bio: Option<String>,
+    pub bio: Option<String>,
 }
