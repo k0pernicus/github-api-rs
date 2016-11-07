@@ -1,7 +1,7 @@
 use hyper::Client;
 use hyper::client::response::Response;
 use hyper::Error;
-use hyper::header::UserAgent;
+use hyper::header::{Authorization, Basic, UserAgent};
 use hyper::method::Method;
 use hyper::status::StatusCode;
 
@@ -31,6 +31,7 @@ struct GitHubErrorResult {
     /// The global error message
     message: String,
     /// All detected errors
+    #[serde(default)]
     errors: Vec<GitHubErrorPart>,
 }
 
@@ -42,6 +43,7 @@ struct GitHubErrorPart {
     /// The code that contains the error
     code: String,
     /// The message to understand the error
+    #[serde(default)]
     message: String,
 }
 
@@ -89,17 +91,22 @@ impl GithubClient {
     ///
     /// * `method` - An HTTP/HTTPS request method
     /// * `url` - A string slice that represent the URL to send the request
+    /// * `body` - A structure to send, with the request
     ///
     /// # Example
     ///
     /// `
-    /// match process_request(Method::Get, "https://api.github.com/users/k0pernicus") {
+    /// match process_request(Method::Get, "https://api.github.com/users/k0pernicus", None) {
     ///     Ok(body) => println!("The response body is {:?}", body),
     ///     Err(error) => println!("Oops, an error has occured: {:?}", error)
     /// }
     /// `
-    pub fn process_request(&self, http_method: Method, url: &str) -> Result<String, String> {
-        match self.send_request(http_method, url) {
+    pub fn process_request(&self,
+                           http_method: Method,
+                           url: &str,
+                           body: Option<String>)
+                           -> Result<String, String> {
+        match self.send_request(http_method, url, &body) {
             Ok(mut value) => self.get_result_from_request(&mut value),
             Err(error) => Err(format!("Error processing the request: {}", error)),
         }
@@ -112,13 +119,27 @@ impl GithubClient {
     ///
     /// * `method` - An HTTP/HTTPS request method
     /// * `url` - The URL to send the request
-    fn send_request(&self, method: Method, url: &str) -> Result<Response, Error> {
+    /// * `body` - A structure to send, with the request
+    fn send_request(&self,
+                    method: Method,
+                    url: &str,
+                    body: &Option<String>)
+                    -> Result<Response, Error> {
         let url = format!("{}/{}", GITHUB_API_URL, url);
-        self.client
+        let mut request = self.client
             .request(method, &url)
-            // TODO: Add Authorization
-            .header(UserAgent(USER_AGENT.to_owned()))
-            .send()
+            .header(Authorization(Basic {
+                username: self.username.to_owned(),
+                password: Some(self.api_key.to_owned()),
+            }))
+            .header(UserAgent(USER_AGENT.to_owned()));
+        // If a body has been send, give to the request a body
+        match body {
+            // Add the body, which contains the message (structure) to send
+            &Some(ref body) => request = request.body(body),
+            &None => (),
+        }
+        request.send()
     }
 
     /// Return a Result type that contains the body of the request response, or an error.
@@ -132,13 +153,18 @@ impl GithubClient {
             Ok(_) => {}
             Err(error) => return Err(format!("Error processing the response request: {}", error)),
         }
-        if response.status.class().default_code() == StatusCode::Ok {
-            Ok(body)
-        } else {
-            match serde_json::from_str::<GitHubErrorResult>(&body) {
-                Ok(error) => Err(error.message),
-                Err(error) => {
-                    Err(format!("Error processing Github error: {}\nBody: {}", error, body))
+        match response.status.class().default_code() {
+            StatusCode::Ok => Ok(body),
+            _ => {
+                match serde_json::from_str::<GitHubErrorResult>(&body) {
+                    Ok(error) => Err(error.message),
+                    Err(error) => {
+                        Err(format!("Error processing Github error (code status {:?}): {}\nBody: \
+                                     {}",
+                                    response.status.class().default_code(),
+                                    error,
+                                    body))
+                    }
                 }
             }
         }
