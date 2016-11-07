@@ -1,11 +1,17 @@
+///
+/// Module to compose with `users`.
+/// Github documentation available at https://developer.github.com/v3/users/.
+///
 use client::GithubClient;
 
 use hyper::method::Method;
 
 use serde_json;
 
-/// URL to access the Github API for User
-const USER_API: &'static str = "users";
+/// URL to access the Github API for myself
+const USER_API: &'static str = "user";
+/// URL to access the Github API for other Github users
+const USERS_API: &'static str = "users";
 
 /// A client to communicate with the Github API for Users.
 /// You can create as much as UserClient structure as users you're looking for.
@@ -44,8 +50,14 @@ impl<'a> UserClient<'a> {
     /// let user_infos = user_client.unwrap();
     /// `
     pub fn get(&self) -> Result<UserInfoStructure, String> {
+        /// Check if the current user is the same for this client
+        let url = if self.username == self.github_client.username {
+            USER_API.to_string()
+        } else {
+            format!("{}/{}", USERS_API, self.username)
+        };
         match self.github_client
-            .process_request(Method::Get, &format!("{}/{}", USER_API, self.username)) {
+            .process_request(Method::Get, &url) {
             Ok(response) => {
                 match serde_json::from_str(&response) {
                     Ok(user_structure) => Ok(user_structure),
@@ -63,7 +75,7 @@ impl<'a> UserClient<'a> {
 }
 
 /// Interesting fields that represent globally a User on Github
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UserInfoStructure {
     #[serde(skip_serializing_if="Option::is_none")]
     login: Option<String>,
@@ -113,23 +125,47 @@ pub struct UserInfoStructure {
     hireable: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     bio: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    total_private_repos: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    owned_private_repos: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    private_gists: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    disk_usage: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    collaborators: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    plan: Option<UserPlanStructure>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct UserPlanStructure {
+    #[serde(skip_serializing_if="Option::is_none")]
+    name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    space: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    private_repos: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    collaborators: Option<usize>,
 }
 
 /// Fields that can be modified using the Github API, for a given user
-#[derive(Debug, Serialize)]
-pub struct UserUpdateStructure<'a> {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserUpdateStructure {
     #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<&'a str>,
+    name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    email: Option<&'a str>,
+    email: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    blog: Option<&'a str>,
+    blog: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    company: Option<&'a str>,
+    company: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    location: Option<&'a str>,
+    location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     hireable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    bio: Option<&'a str>,
+    bio: Option<String>,
 }
