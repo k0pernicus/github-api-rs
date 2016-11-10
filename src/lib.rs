@@ -9,6 +9,7 @@ extern crate serde_derive;
 
 pub mod client;
 pub mod user;
+pub mod repo;
 
 // Custom headers
 header! { (XRateLimitLimit, "X-RateLimit-Limit") => [usize] }
