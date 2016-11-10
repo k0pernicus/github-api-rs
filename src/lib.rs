@@ -18,6 +18,7 @@ header! { (XRateLimitRemaining, "X-RateLimit-Remaining") => [usize] }
 #[cfg(test)]
 mod tests {
     use client::GithubClient;
+    use repo::RepoClient;
     use std::env;
     use user::UserUpdateStructure;
 
@@ -41,8 +42,23 @@ mod tests {
         let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
         let myself = github_client.get_myself_client();
         match myself.get() {
-            Ok(value) => println!("SUCCESS: {:?}", value),
-            Err(error) => println!("ERROR: {:?}", error),
+            Ok(value) => println!("[test_user] GET SUCCESS: {:?}", value),
+            Err(error) => println!("[test_user] GET ERROR: {:?}", error),
+        }
+    }
+
+    #[test]
+    fn test_repo() {
+        let api_key = "GITHUB_API_RS";
+        let GITHUB_API_KEY = match env::var(api_key) {
+            Ok(val) => val,
+            Err(e) => DEFAULT_API_KEY.to_string(),
+        };
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
+        let current_repo_api = RepoClient::new(&github_client, "k0pernicus", "github-api-rs");
+        match current_repo_api.get() {
+            Ok(value) => println!("[test_repo] GET SUCCESS: {:?}", value),
+            Err(error) => println!("[test_repo] GET ERROR: {:?}", error),
         }
     }
 
@@ -56,8 +72,8 @@ mod tests {
         let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
         let myself_client = github_client.get_myself_client();
         match myself_client.get() {
-            Ok(value) => println!("GET SUCCESS: {:?}", value),
-            Err(error) => println!("GET ERROR: {:?}", error),
+            Ok(value) => println!("[modify_user] GET SUCCESS: {:?}", value),
+            Err(error) => println!("[modify_user] GET ERROR: {:?}", error),
         }
         let new_infos = UserUpdateStructure {
             name: None,
@@ -69,8 +85,8 @@ mod tests {
             bio: None,
         };
         match myself_client.update(&new_infos) {
-            Ok(value) => println!("UPDATE SUCCESS: {:?}", value),
-            Err(error) => println!("UPDATE ERROR: {:?}", error),
+            Ok(value) => println!("[modify_user] UPDATE SUCCESS: {:?}", value),
+            Err(error) => println!("[modify_user] UPDATE ERROR: {:?}", error),
         }
     }
 
