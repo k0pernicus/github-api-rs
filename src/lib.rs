@@ -9,6 +9,7 @@ extern crate serde_derive;
 
 pub mod client;
 pub mod user;
+pub mod rate_limits;
 pub mod repo;
 
 // Custom headers
@@ -19,6 +20,7 @@ header! { (XRateLimitRemaining, "X-RateLimit-Remaining") => [usize] }
 mod tests {
     use client::GithubClient;
     use repo::RepoClient;
+    use rate_limits::RateLimits;
     use std::env;
     use user::UserUpdateStructure;
 
@@ -59,6 +61,21 @@ mod tests {
         match current_repo_api.get() {
             Ok(value) => println!("[test_repo] GET SUCCESS: {:?}", value),
             Err(error) => println!("[test_repo] GET ERROR: {:?}", error),
+        }
+    }
+
+    #[test]
+    fn test_rate_limits() {
+        let api_key = "GITHUB_API_RS";
+        let github_api_key = match env::var(api_key) {
+            Ok(val) => val,
+            Err(_) => DEFAULT_API_KEY.to_string(),
+        };
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &github_api_key);
+        let current_limits = RateLimits::new(&github_client);
+        match current_limits.get() {
+            Ok(value) => println!("[test_rate_limits] GET SUCCESS: {:?}", value),
+            Err(error) => println!("[test_rate_limits] GET ERROR: {:?}", error),
         }
     }
 
