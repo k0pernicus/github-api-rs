@@ -64,39 +64,68 @@ impl<'a> RepoClient<'a> {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RepoPermissionsStructure {
-    admin: bool,
-    push: bool,
-    pull: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    push: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pull: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RepoInfoStructure {
-    id: usize,
-    owner: UserInfoStructure,
-    name: String,
-    description: String,
-    private: bool,
-    fork: bool,
-    url: String,
-    html_url: String,
-    branches_url: String,
-    collaborators_url: String,
-    contributors_url: String,
-    forks_url: String,
-    languages_url: String,
-    releases_url: String,
-    stargazers_url: String,
-    subscribers_url: String,
-    subscription_url: String,
-    homepage: String,
-    language: String,
-    forks_count: usize,
-    stargazers_count: usize,
-    watchers_count: usize,
-    size: usize,
-    open_issues_count: usize,
-    permissions: RepoPermissionsStructure,
-    subscribers_count: usize,
+    #[serde(skip_serializing_if="Option::is_none")]
+    id: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    owner: Option<UserInfoStructure>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    language: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    forks_count: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    stargazers_count: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    watchers_count: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    size: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    open_issues_count: Option<usize>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    permissions: Option<RepoPermissionsStructure>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    subscribers_count: Option<usize>,
     #[serde(skip_serializing_if="Option::is_none")]
     parent: Option<Box<RepoInfoStructure>>,
     #[serde(skip_serializing_if="Option::is_none")]
