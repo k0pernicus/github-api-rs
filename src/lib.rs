@@ -35,11 +35,11 @@ mod tests {
     #[test]
     fn test_user() {
         let api_key = "GITHUB_API_RS";
-        let GITHUB_API_KEY = match env::var(api_key) {
+        let github_api_key = match env::var(api_key) {
             Ok(val) => val,
-            Err(e) => DEFAULT_API_KEY.to_string(),
+            Err(_) => DEFAULT_API_KEY.to_string(),
         };
-        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &github_api_key);
         let myself = github_client.get_myself_client();
         match myself.get() {
             Ok(value) => println!("[test_user] GET SUCCESS: {:?}", value),
@@ -50,11 +50,11 @@ mod tests {
     #[test]
     fn test_repo() {
         let api_key = "GITHUB_API_RS";
-        let GITHUB_API_KEY = match env::var(api_key) {
+        let github_api_key = match env::var(api_key) {
             Ok(val) => val,
-            Err(e) => DEFAULT_API_KEY.to_string(),
+            Err(_) => DEFAULT_API_KEY.to_string(),
         };
-        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &github_api_key);
         let current_repo_api = RepoClient::new(&github_client, "k0pernicus", "github-api-rs");
         match current_repo_api.get() {
             Ok(value) => println!("[test_repo] GET SUCCESS: {:?}", value),
@@ -65,11 +65,11 @@ mod tests {
     #[test]
     fn modify_user() {
         let key = "GITHUB_API_RS";
-        let GITHUB_API_KEY = match env::var(key) {
+        let github_api_key = match env::var(key) {
             Ok(val) => val,
-            Err(e) => DEFAULT_API_KEY.to_string(),
+            Err(_) => DEFAULT_API_KEY.to_string(),
         };
-        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &GITHUB_API_KEY);
+        let github_client = GithubClient::new(DEFAULT_GITHUB_PROFILE, &github_api_key);
         let myself_client = github_client.get_myself_client();
         match myself_client.get() {
             Ok(value) => println!("[modify_user] GET SUCCESS: {:?}", value),
