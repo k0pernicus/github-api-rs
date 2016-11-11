@@ -162,6 +162,7 @@ pub struct UserInfoStructure {
     plan: Option<UserPlanStructure>,
 }
 
+/// Fields to constitute a user plan, for the Github API
 #[derive(Serialize, Deserialize, Debug)]
 struct UserPlanStructure {
     #[serde(skip_serializing_if="Option::is_none")]

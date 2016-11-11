@@ -25,28 +25,6 @@ pub struct GithubClient {
     client: Client,
 }
 
-/// A private structure to get and process errors from Github
-#[derive(Debug, Deserialize)]
-struct GitHubErrorResult {
-    /// The global error message
-    message: String,
-    /// All detected errors
-    #[serde(default)]
-    errors: Vec<GitHubErrorPart>,
-}
-
-/// A private structure to parse an error from Github
-#[derive(Debug, Deserialize)]
-struct GitHubErrorPart {
-    /// The field that contains the error
-    field: String,
-    /// The code that contains the error
-    code: String,
-    /// The message to understand the error
-    #[serde(default)]
-    message: String,
-}
-
 impl GithubClient {
     /// Returns a Github client to communicate with the Github API
     ///
@@ -169,4 +147,26 @@ impl GithubClient {
             }
         }
     }
+}
+
+/// A private structure to get and process errors from Github
+#[derive(Debug, Deserialize)]
+struct GitHubErrorResult {
+    /// The global error message
+    message: String,
+    /// All detected errors
+    #[serde(default)]
+    errors: Vec<GitHubErrorPart>,
+}
+
+/// A private structure to parse an error from Github
+#[derive(Debug, Deserialize)]
+struct GitHubErrorPart {
+    /// The field that contains the error
+    field: String,
+    /// The code that contains the error
+    code: String,
+    /// The message to understand the error
+    #[serde(default)]
+    message: String,
 }

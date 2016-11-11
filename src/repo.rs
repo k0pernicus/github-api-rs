@@ -67,6 +67,7 @@ impl<'a> GetterAPI for RepoClient<'a> {
     }
 }
 
+/// Contains all necessary fields to define permissions, for a given repository
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RepoPermissionsStructure {
     #[serde(skip_serializing_if="Option::is_none")]
@@ -77,6 +78,7 @@ pub struct RepoPermissionsStructure {
     pull: Option<bool>,
 }
 
+/// Contains all necessary fields to define a repository
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RepoInfoStructure {
     #[serde(skip_serializing_if="Option::is_none")]
