@@ -25,7 +25,7 @@ trait GetterAPI {
 /// A trait for structures that send a PATCH request
 trait UpdaterAPI {
     type PatchType: std::fmt::Debug + serde::Serialize + serde::Deserialize;
-    fn update(&self, &Self::PatchType) -> Result<String, String>;
+    fn patch(&self, &Self::PatchType) -> Result<String, String>;
 }
 
 #[cfg(test)]
@@ -36,6 +36,7 @@ mod tests {
     use repo::RepoClient;
     use std::env;
     use user::UserUpdateStructure;
+    use UpdaterAPI;
 
     const DEFAULT_API_KEY: &'static str = "HelloWorld12345";
     const DEFAULT_GITHUB_PROFILE: &'static str = "username";
@@ -114,7 +115,7 @@ mod tests {
             hireable: Some(false),
             bio: None,
         };
-        match myself_client.update(&new_infos) {
+        match myself_client.patch(&new_infos) {
             Ok(value) => println!("[modify_user] UPDATE SUCCESS: {:?}", value),
             Err(error) => println!("[modify_user] UPDATE ERROR: {:?}", error),
         }

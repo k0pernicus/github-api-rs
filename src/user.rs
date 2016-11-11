@@ -85,7 +85,7 @@ impl<'a> UpdaterAPI for UserClient<'a> {
     /// # Argument
     ///
     /// `new_infos` - A UserUpdateStructure that contains some informations to update
-    fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
+    fn patch(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
         let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
         match infos_to_send {
             Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
