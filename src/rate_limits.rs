@@ -1,23 +1,24 @@
 use client::GithubClient;
-
 use GetterAPI;
-
 use hyper::method::Method;
-
 use serde_json;
 
+/// Static string that corresponds to the rate URL
 const RATELIMITS_API_URL: &'static str = "rate_limit";
 
+/// Structure to communicate with the Github API
 pub struct RateLimits<'a> {
     github_client: &'a GithubClient,
 }
 
+/// Implementation of the given structure
 impl<'a> RateLimits<'a> {
     pub fn new(github_client: &'a GithubClient) -> Self {
         RateLimits { github_client: github_client }
     }
 }
 
+/// Get informations about rate limits, using GetterAPI trait
 impl<'a> GetterAPI for RateLimits<'a> {
     type GetType = Limits;
     fn get(&self) -> Result<Limits, String> {
@@ -38,6 +39,7 @@ impl<'a> GetterAPI for RateLimits<'a> {
     }
 }
 
+/// Atomistic structure for core, graphql, search and rate fields
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Rate {
     #[serde(skip_serializing_if="Option::is_none")]
@@ -48,6 +50,7 @@ pub struct Rate {
     reset: Option<usize>,
 }
 
+/// Structure that contains big fields about rate limits
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourcesLimit {
     #[serde(skip_serializing_if="Option::is_none")]
@@ -58,6 +61,7 @@ pub struct ResourcesLimit {
     search: Option<Rate>,
 }
 
+/// The principal structure to receive and save informations about rate limits
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Limits {
     #[serde(skip_serializing_if="Option::is_none")]

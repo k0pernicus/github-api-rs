@@ -2,19 +2,17 @@
 /// Module to compose with `repos`.
 /// Github documentation available at https://developer.github.com/v3/repos/.
 ///
-
 use client::GithubClient;
-
 use GetterAPI;
-
 use hyper::method::Method;
-
 use user::UserInfoStructure;
-
 use serde_json;
 
+/// Static string that corresponds to the repository URL
 const REPOS_API_URL: &'static str = "repos";
 
+/// Structure that represents a repository client.
+/// This structure is needed to communicate with the Github API, about a repository owned by a Github user.
 pub struct RepoClient<'a> {
     /// The Github client
     github_client: &'a GithubClient,
