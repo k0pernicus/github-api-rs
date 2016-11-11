@@ -16,9 +16,16 @@ pub mod repo;
 header! { (XRateLimitLimit, "X-RateLimit-Limit") => [usize] }
 header! { (XRateLimitRemaining, "X-RateLimit-Remaining") => [usize] }
 
+/// A trait for structures that send a GET request
 trait GetterAPI {
     type GetType: std::fmt::Debug + serde::Serialize + serde::Deserialize;
     fn get(&self) -> Result<Self::GetType, String>;
+}
+
+/// A trait for structures that send a PATCH request
+trait UpdaterAPI {
+    type PatchType: std::fmt::Debug + serde::Serialize + serde::Deserialize;
+    fn update(&self, &Self::PatchType) -> Result<String, String>;
 }
 
 #[cfg(test)]

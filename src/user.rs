@@ -6,6 +6,7 @@ use client::GithubClient;
 use GetterAPI;
 use hyper::method::Method;
 use serde_json;
+use UpdaterAPI;
 
 /// URL to access the Github API for myself
 const USER_API_URL: &'static str = "user";
@@ -36,23 +37,6 @@ impl<'a> UserClient<'a> {
         UserClient {
             github_client: github_client,
             username: username.to_owned(),
-        }
-    }
-
-    /// Update the current informations about the user, and returns a String that contains
-    /// a message from the server if the request succeeds or an error message
-    ///
-    /// # Argument
-    ///
-    /// `new_infos` - A UserUpdateStructure that contains some informations to update
-    pub fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
-        let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
-        match infos_to_send {
-            Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
-            Err(error) => {
-                Err(format!("Error converting the updated structure to string, due to {}",
-                            error))
-            }
         }
     }
 }
@@ -89,6 +73,26 @@ impl<'a> GetterAPI for UserClient<'a> {
                 }
             }
             Err(error) => Err(error),
+        }
+    }
+}
+
+impl<'a> UpdaterAPI for UserClient<'a> {
+    type PatchType = UserUpdateStructure;
+    /// Update the current informations about the user, and returns a String that contains
+    /// a message from the server if the request succeeds or an error message
+    ///
+    /// # Argument
+    ///
+    /// `new_infos` - A UserUpdateStructure that contains some informations to update
+    fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
+        let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
+        match infos_to_send {
+            Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
+            Err(error) => {
+                Err(format!("Error converting the updated structure to string, due to {}",
+                            error))
+            }
         }
     }
 }
