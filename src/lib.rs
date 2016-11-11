@@ -16,11 +16,17 @@ pub mod repo;
 header! { (XRateLimitLimit, "X-RateLimit-Limit") => [usize] }
 header! { (XRateLimitRemaining, "X-RateLimit-Remaining") => [usize] }
 
+trait GetterAPI {
+    type GetType: std::fmt::Debug + serde::Serialize + serde::Deserialize;
+    fn get(&self) -> Result<Self::GetType, String>;
+}
+
 #[cfg(test)]
 mod tests {
     use client::GithubClient;
-    use repo::RepoClient;
+    use GetterAPI;
     use rate_limits::RateLimits;
+    use repo::RepoClient;
     use std::env;
     use user::UserUpdateStructure;
 

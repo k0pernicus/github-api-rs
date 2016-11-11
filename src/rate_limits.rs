@@ -1,5 +1,7 @@
 use client::GithubClient;
 
+use GetterAPI;
+
 use hyper::method::Method;
 
 use serde_json;
@@ -14,8 +16,11 @@ impl<'a> RateLimits<'a> {
     pub fn new(github_client: &'a GithubClient) -> Self {
         RateLimits { github_client: github_client }
     }
+}
 
-    pub fn get(&self) -> Result<Limits, String> {
+impl<'a> GetterAPI for RateLimits<'a> {
+    type GetType = Limits;
+    fn get(&self) -> Result<Limits, String> {
         match self.github_client.process_request(Method::Get, RATELIMITS_API_URL, None) {
             Ok(response) => {
                 match serde_json::from_str(&response) {

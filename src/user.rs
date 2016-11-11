@@ -3,9 +3,8 @@
 /// Github documentation available at https://developer.github.com/v3/users/.
 ///
 use client::GithubClient;
-
+use GetterAPI;
 use hyper::method::Method;
-
 use serde_json;
 
 /// URL to access the Github API for myself
@@ -40,6 +39,26 @@ impl<'a> UserClient<'a> {
         }
     }
 
+    /// Update the current informations about the user, and returns a String that contains
+    /// a message from the server if the request succeeds or an error message
+    ///
+    /// # Argument
+    ///
+    /// `new_infos` - A UserUpdateStructure that contains some informations to update
+    pub fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
+        let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
+        match infos_to_send {
+            Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
+            Err(error) => {
+                Err(format!("Error converting the updated structure to string, due to {}",
+                            error))
+            }
+        }
+    }
+}
+
+impl<'a> GetterAPI for UserClient<'a> {
+    type GetType = UserInfoStructure;
     /// Returns a Result type that contains a UserInfoStructure structure, or a String error.
     ///
     /// # Example
@@ -49,7 +68,7 @@ impl<'a> UserClient<'a> {
     /// let user_client = github_client.get_myself_client();
     /// let user_infos = user_client.unwrap();
     /// `
-    pub fn get(&self) -> Result<UserInfoStructure, String> {
+    fn get(&self) -> Result<UserInfoStructure, String> {
         /// Check if the current user is the same for this client
         let url = if self.username == self.github_client.username {
             USER_API_URL.to_string()
@@ -72,27 +91,10 @@ impl<'a> UserClient<'a> {
             Err(error) => Err(error),
         }
     }
-
-    /// Update the current informations about the user, and returns a String that contains
-    /// a message from the server if the request succeeds or an error message
-    ///
-    /// # Argument
-    ///
-    /// `new_infos` - A UserUpdateStructure that contains some informations to update
-    pub fn update(&self, new_infos: &UserUpdateStructure) -> Result<String, String> {
-        let infos_to_send = serde_json::to_string::<UserUpdateStructure>(new_infos);
-        match infos_to_send {
-            Ok(body) => self.github_client.process_request(Method::Patch, USER_API_URL, Some(body)),
-            Err(error) => {
-                Err(format!("Error converting the updated structure to string, due to {}",
-                            error))
-            }
-        }
-    }
 }
 
 /// Interesting fields that represent globally a User on Github
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserInfoStructure {
     #[serde(skip_serializing_if="Option::is_none")]
     login: Option<String>,

@@ -5,6 +5,8 @@
 
 use client::GithubClient;
 
+use GetterAPI;
+
 use hyper::method::Method;
 
 use user::UserInfoStructure;
@@ -41,9 +43,12 @@ impl<'a> RepoClient<'a> {
             reponame: reponame.to_owned(),
         }
     }
+}
 
+impl<'a> GetterAPI for RepoClient<'a> {
+    type GetType = RepoInfoStructure;
     /// Returns a structure to get informations about a repository (RepoInfoStructure), owned by someone
-    pub fn get(&self) -> Result<RepoInfoStructure, String> {
+    fn get(&self) -> Result<RepoInfoStructure, String> {
         let url = format!("{}/{}/{}", REPOS_API_URL, self.owner, self.reponame);
         match self.github_client.process_request(Method::Get, &url, None) {
             Ok(response) => {
