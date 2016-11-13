@@ -2,6 +2,63 @@
 name = "github-api"
 version = "0.1.0"
 authors = ["k0pernicus <antonin.carette@gmail.com>"]
+publish = false
+description = "A Rust API for Github (v3)"
+repository = "https://github.com/k0pernicus/github-api-rs"
+readme = "README.md"
+keywords = ["API", "Github"]
+
+[lib]
+name = "github"
+path = "src/lib.rs"
+bench = true
+doc = true
+doctest = false
+test = true
+plugin = false
+proc-macro = false
+harness = true
+
+# `cargo build`.
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 1
+panic = 'unwind'
+
+# `cargo build --release`.
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1
+panic = 'unwind'
+
+# `cargo test`.
+[profile.test]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 1
+panic = 'unwind'
+
+# `cargo doc`.
+[profile.doc]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 1
+panic = 'unwind'
+
 
 [dependencies]
 hyper = "0.9"
